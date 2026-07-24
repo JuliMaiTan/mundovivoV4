@@ -1,134 +1,77 @@
-# Mundo Vivo 2.0 - Mobile RPG com LLM Local
+# Mundo Vivo V4
 
-## 🎮 Visão Geral
+RPG narrativo procedural offline-first para Android, com LLM local via llama.cpp.
 
-Mundo Vivo é um RPG procedural para Android com narrador LLM rodando localmente no dispositivo. O jogo separa claramente o **motor canônico** (verdade do mundo) do **LLM narrador** (prosa autorizada), garantindo consisteência e agência do jogador.
+O projeto separa duas responsabilidades:
 
-## 🛠️ Arquitetura
+- **Motor canonico:** decide estado, regras, acoes, NPCs e consequencias.
+- **Narrador LLM:** narra apenas fatos autorizados pelo motor, em JSON restrito por GBNF.
 
-### Separação Motor vs LLM
+## Stack
 
-```
-Input do jogador
-    ↓
-Motor Canônico (determina verdade)
-    ↓
-Fatos Autorizados
-    ↓
-LLM Narrador (gera prosa com GBNF)
-    ↓
-Narrativa Validada
-    ↓
-UI
-```
+- Kotlin 1.9+
+- Jetpack Compose + Material 3
+- Coroutines + Flow
+- Room/SQLite a partir da Fase 1
+- llama.cpp via JNI a partir da Fase 0 real
+- Gradle KTS + CMake
 
-**Regra de Ouro**: Se afeta o jogo, pertence ao motor. Se só descreve, pode ir para o LLM.
+## Modelos
 
-### Stack Técnico
+| Modelo | Perfil |
+| --- | --- |
+| Qwen 2.5 1.5B abliterated Q4_K_M | Rapido e leve, default para 4-6GB |
+| Gemma 2 2B abliterated Q4_K_M | Narrativa mais densa, recomendado para 8GB+ |
 
-- **Linguagem**: Kotlin 1.9+
-- **UI**: Jetpack Compose + Material 3
-- **Persistência**: Room (SQLite)
-- **LLM**: llama.cpp Android (via JNI)
-- **Modelos**: Qwen 1.5B / Gemma 2B (Q4_K_M, abliterated)
-- **Async**: Coroutines + Flow
-- **Build**: Gradle 8+ com Kotlin DSL
+O Qwen ja possui SHA256 real no catalogo. A Gemma ainda precisa de hash real antes de release.
 
-## 📱 Modelos Suportados
+## Estado atual
 
-### Qwen 1.5B Q4 (Padrão)
-- ⚡ 17-20 tok/s em 4GB RAM
-- 💾 1.2GB download, 1.56GB RAM
-- 🌍 PT-BR aceitável
-- ✅ Viável em 4GB+
+O repo contem scaffold Android, UI base, contrato do narrador, GBNF, downloader de modelos e LlamaEngine mockado.
 
-### Gemma 2B Q4 (Qualidade)
-- 📖 7-8 tok/s
-- 💾 1.7GB download, 2.7GB RAM
-- 🌍 PT-BR melhor que Qwen
-- ✅ Recomendado 8GB+
+Ainda pendente:
 
-## 🚧 Fases de Desenvolvimento
+- build `assembleDebug` validado;
+- llama.cpp como submodulo;
+- JNI real;
+- APK testado em celular;
+- motor canonico com Room.
 
-### Fase 0 - Bootstrap LLM ⚙️ (Scaffold pronto, build/device pendente)
-- [x] Estrutura Android base
-- [x] DeviceInfo (detecção RAM)
-- [x] ModelCatalog (Qwen/Gemma)
-- [x] ModelSelectionPolicy
-- [x] ModelDownloader (resumable, corrigido)
-- [x] ModelIntegrityChecker (SHA256)
-- [x] ModelManager
-- [x] GBNF grammar
-- [x] NarratorContractValidator
-- [x] UI de seleção de modelo
-- [x] Tela de teste taverna + métricas (LLMTestScreen)
-- [x] Navegação (NavGraph)
-- [x] LlamaEngine (mock ativo — permite UI funcionar sem native lib)
-- [ ] Integração llama.cpp + JNI (guia em LLAMA_INTEGRATION.md)
-- [ ] Build validado via `./gradlew assembleDebug`
-- [ ] SHA256 real dos modelos (placeholders ativos)
-- [ ] Rodar em celular físico
+## Comandos
 
-**Aceite Fase 0**: Download Qwen, gera narrativa válida com GBNF, métricas (tok/s, TTFT, RAM) exibidas.
+Configure `local.properties` se necessario:
 
-### Fase 1 - Motor Core
-- [ ] Room database (todas as tabelas)
-- [ ] GameEngine + TurnProcessor
-- [ ] ActionParser + ActionResolver
-- [ ] EventBus
-- [ ] WorldStateRepository
-- [ ] Testes unitários
-
-### Fase 2 - Criação de Mundo
-- [ ] WorldCreationFlow (wizard 12 etapas)
-- [ ] Gerador procedural (mundo, NPCs, locações)
-- [ ] Integração LLM (cena inicial)
-
-### Fase 3 - NPCs e Simulação
-- [ ] NpcAutonomyEngine
-- [ ] Memória de NPCs
-- [ ] Sistema de relacionamentos
-
-### Fase 4 - Ação Confirmada
-- [ ] ActionPreview (chance/risco)
-- [ ] ActionConfirmationDialog
-
-### Fase 5 - Polimento
-- [ ] Save/load múltiplo
-- [ ] Configurações
-- [ ] Tutorial
-- [ ] Otimizações
-
-## 📝 Contrato JSON (GBNF Obrigatório)
-
-```json
-{
-  "contract_version": "1.0",
-  "response_type": "TURN_NARRATION",
-  "narrative": "Texto narrativo em português BR.",
-  "sensory_focus": ["visao", "audicao"],
-  "npcs_mentioned": ["Torvin"],
-  "tone": "tensao",
-  "warnings": [],
-  "error": null
-}
+```properties
+sdk.dir=C:\\Users\\jumtp\\Android\\Sdk
 ```
 
-**Importante**: GBNF é obrigatório. Modelos 1.5B não seguem schema consistentemente sem constrained decoding.
+Build:
 
-## 🛡️ WorldRules (não ContentPolicy)
+```bash
+./gradlew assembleDebug
+```
 
-O jogo permite conteúdo adulto (+18), mas com foco em:
-- **AgencyRules**: Jogador nunca age sozinho
-- **WorldRules**: Consistência do mundo
-- **NarrativeBoundaries**: Limites ficcionais
+Testes:
 
-Não é censura moral, é consistência narrativa.
+```bash
+./gradlew test
+```
 
-## 👥 Time
+No Windows:
 
-Projeto desenvolvido para celulares Android 4GB+ RAM com LLM local uncensored.
+```powershell
+.\gradlew.bat assembleDebug
+.\gradlew.bat test
+```
 
-## 📝 Licença
+## Documentos
 
-TODO: Definir licença
+- `docs/MOBILE_PLAN.md`: plano mobile revisado.
+- `STATUS.md`: estado real do projeto.
+- `ARCHITECTURE.md`: arquitetura.
+- `LLAMA_INTEGRATION.md`: guia de integracao llama.cpp.
+- `BUILD_SETUP.md`: setup de ambiente.
+
+## Regra de ouro
+
+Se afeta o jogo, pertence ao motor. Se so descreve, pode ir para o LLM.

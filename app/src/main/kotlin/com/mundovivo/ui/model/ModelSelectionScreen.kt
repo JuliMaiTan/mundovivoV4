@@ -151,6 +151,7 @@ fun RecommendationCard(recommended: ModelInfo) {
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun ModelCard(
     model: ModelInfo,
     badge: String,
