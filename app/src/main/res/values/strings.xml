@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Mundo Vivo</string>
+    
+    <!-- Model Selection -->
+    <string name="model_selection_title">Escolha o Modelo de IA</string>
+    <string name="model_recommended">Recomendado para este aparelho</string>
+    <string name="device_info">Informações do Dispositivo</string>
+    
+    <!-- Download -->
+    <string name="downloading">Baixando...</string>
+    <string name="download_complete">Download completo</string>
+    <string name="verifying_integrity">Verificando integridade...</string>
+    
+    <!-- Errors -->
+    <string name="error_download_failed">Falha no download</string>
+    <string name="error_corrupted_file">Arquivo corrompido</string>
+    <string name="error_insufficient_storage">Espaço insuficiente</string>
+    <string name="error_insufficient_ram">RAM insuficiente</string>
+</resources>

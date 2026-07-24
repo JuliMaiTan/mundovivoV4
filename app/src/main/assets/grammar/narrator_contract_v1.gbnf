@@ -1,0 +1,28 @@
+# GBNF Grammar para contrato JSON do narrador
+# Força o LLM a retornar JSON válido com estrutura específica
+
+root ::= "{" ws
+    "\"contract_version\":" ws string "," ws
+    "\"response_type\":" ws response-type "," ws
+    "\"narrative\":" ws string "," ws
+    "\"sensory_focus\":" ws string-array "," ws
+    "\"npcs_mentioned\":" ws string-array "," ws
+    "\"tone\":" ws tone-enum "," ws
+    "\"warnings\":" ws string-array "," ws
+    "\"error\":" ws (string | "null")
+    ws "}"
+
+# Strings
+string ::= "\"" ([^"\\] | "\\" (["\\bfnrt] | "u" [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F] [0-9a-fA-F]))* "\""
+
+# Arrays de strings
+string-array ::= "[" ws (string (ws "," ws string)*)? ws "]"
+
+# Enum de response_type
+response-type ::= "\"TURN_NARRATION\"" | "\"ERROR\"" | "\"SYSTEM_MESSAGE\""
+
+# Enum de tone
+tone-enum ::= "\"terror\"" | "\"humor\"" | "\"sensualidade\"" | "\"melancolia\"" | "\"acao\"" | "\"contemplativo\"" | "\"cotidiano\"" | "\"tensao\"" | "\"maravilhamento\""
+
+# Whitespace
+ws ::= [ \t\n\r]*

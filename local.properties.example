@@ -1,0 +1,12 @@
+# Copie este arquivo para /app/local.properties e ajuste o path.
+# NÃO commitar local.properties (já está no .gitignore).
+#
+# Exemplo típico Linux com SDK em /opt/android-sdk:
+sdk.dir=/opt/android-sdk
+
+# Se você instalar em outro lugar:
+# sdk.dir=/home/seu-usuario/Android/Sdk
+# sdk.dir=/usr/local/android-sdk
+
+# NDK só é necessário quando você for compilar llama.cpp:
+# ndk.dir=/opt/android-sdk/ndk/25.2.9519653
